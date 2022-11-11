@@ -1,3 +1,6 @@
+use chroma_rust::Color;
+
 fn main() {
-    println!("Hello, world!");
+    let color = Color::from("#abcdef");
+    println!("color: {:?}", color);
 }
