@@ -1,3 +1,4 @@
+use crate::utils::conversion;
 use std::str::FromStr;
 
 #[derive(Debug, PartialEq)]
@@ -7,6 +8,7 @@ pub enum Color {
     Hex(String),
     Hsl(u8, u8, u8),
     Rgba(u8, u8, u8, f64),
+    Lab(f64, f64, f64),
     Unknown,
 }
 
@@ -19,6 +21,30 @@ impl From<&str> for Color {
             str if str.starts_with("hsv") => todo!(),
             str if str.starts_with("hsl") => todo!(),
             _ => Self::Unknown,
+        }
+    }
+}
+
+impl Color {
+    pub fn get_mode(self, mode: &str) -> Self {
+        match mode {
+            "hex" => match self {
+                Self::Hex(..) => self,
+                Self::Rgb(..) => conversion::hex::rgb2hex(self),
+                _ => todo!(),
+            },
+            "rgb" => match self {
+                Self::Rgb(..) => self,
+                Self::Hex(..) => conversion::hex::hex2rgb(self),
+                Self::Lab(..) => conversion::lab::lab2rgb(self),
+                _ => todo!(),
+            },
+            "lab" => match self {
+                Self::Lab(..) => self,
+                Self::Rgb(..) => conversion::lab::rgb2lab(self),
+                _ => todo!(),
+            },
+            _ => todo!(),
         }
     }
 }
