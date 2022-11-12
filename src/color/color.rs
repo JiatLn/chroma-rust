@@ -25,6 +25,23 @@ impl From<&str> for Color {
     }
 }
 
+impl IntoIterator for Color {
+    type Item = f64;
+    type IntoIter = std::vec::IntoIter<Self::Item>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        match self {
+            Self::Rgb(r, g, b) => vec![r as f64, g as f64, b as f64].into_iter(),
+            Self::Hsv(_, _, _) => todo!(),
+            Self::Hex(_) => todo!(),
+            Self::Hsl(_, _, _) => todo!(),
+            Self::Rgba(r, g, b, a) => vec![r as f64, g as f64, b as f64, a].into_iter(),
+            Self::Lab(l, a, b) => vec![l, a, b].into_iter(),
+            Self::Unknown => todo!(),
+        }
+    }
+}
+
 impl Color {
     pub fn get_mode(self, mode: &str) -> Self {
         match mode {
