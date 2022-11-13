@@ -2,72 +2,56 @@ use crate::utils::conversion;
 use std::str::FromStr;
 
 #[derive(Debug, PartialEq)]
-pub enum Color {
-    Rgb(u8, u8, u8),
-    Hsv(u8, u8, u8),
-    Hex(String),
-    Hsl(u8, u8, u8),
-    Rgba(u8, u8, u8, f64),
-    Lab(f64, f64, f64),
-    Unknown,
+pub struct Color {
+    pub rgba: (u8, u8, u8, f64),
 }
 
 impl From<&str> for Color {
     fn from(str: &str) -> Self {
-        match str {
-            str if str.starts_with("#") => Self::Hex(str.to_string()),
-            str if str.starts_with("rgba") => Color::parse_rgba(str),
-            str if str.starts_with("rgb") => Color::parse_rgb(str),
-            str if str.starts_with("hsv") => todo!(),
-            str if str.starts_with("hsl") => todo!(),
-            _ => Self::Unknown,
-        }
+        let (r, g, b, a) = match str {
+            str if str.starts_with("#") => conversion::hex::hex2rgb(str),
+            str if str.starts_with("rgba") => Color::parse_rgba_str(str),
+            str if str.starts_with("rgb") => Color::parse_rgb_str(str),
+            str if str.starts_with("lab") => {
+                let (l, a, b) = Color::parse_lab_str(str);
+                conversion::lab::lab2rgb((l, a, b))
+            }
+            _ => todo!(),
+        };
+        Color { rgba: (r, g, b, a) }
     }
 }
 
-impl IntoIterator for Color {
+impl Iterator for Color {
     type Item = f64;
-    type IntoIter = std::vec::IntoIter<Self::Item>;
 
-    fn into_iter(self) -> Self::IntoIter {
-        match self {
-            Self::Rgb(r, g, b) => vec![r as f64, g as f64, b as f64].into_iter(),
-            Self::Hsv(_, _, _) => todo!(),
-            Self::Hex(_) => todo!(),
-            Self::Hsl(_, _, _) => todo!(),
-            Self::Rgba(r, g, b, a) => vec![r as f64, g as f64, b as f64, a].into_iter(),
-            Self::Lab(l, a, b) => vec![l, a, b].into_iter(),
-            Self::Unknown => todo!(),
-        }
+    fn next(&mut self) -> Option<Self::Item> {
+        let (r, g, b, a) = self.rgba;
+        vec![r as f64, g as f64, b as f64, a].into_iter().next()
     }
 }
 
 impl Color {
-    pub fn get_mode(self, mode: &str) -> Self {
+    pub fn get_mode(self, mode: &str) -> Vec<f64> {
         match mode {
-            "hex" => match self {
-                Self::Hex(..) => self,
-                Self::Rgb(..) => conversion::hex::rgb2hex(self),
-                _ => todo!(),
-            },
-            "rgb" => match self {
-                Self::Rgb(..) => self,
-                Self::Hex(..) => conversion::hex::hex2rgb(self),
-                Self::Lab(..) => conversion::lab::lab2rgb(self),
-                _ => todo!(),
-            },
-            "lab" => match self {
-                Self::Lab(..) => self,
-                Self::Rgb(..) => conversion::lab::rgb2lab(self),
-                _ => todo!(),
-            },
+            "rgb" => vec![self.rgba.0 as f64, self.rgba.1 as f64, self.rgba.2 as f64],
+            "rgba" => vec![
+                self.rgba.0 as f64,
+                self.rgba.1 as f64,
+                self.rgba.2 as f64,
+                self.rgba.3,
+            ],
+            "lab" => {
+                let (l, a, b) = conversion::lab::rgb2lab(self.rgba);
+                vec![l, a, b]
+            }
             _ => todo!(),
         }
     }
 }
 
 impl Color {
-    fn parse_rgb(str: &str) -> Self {
+    fn parse_rgb_str(str: &str) -> (u8, u8, u8, f64) {
         let v_u8: Vec<u8> = str
             .trim()
             .replace(" ", "")
@@ -76,9 +60,20 @@ impl Color {
             .split(",")
             .map(|s| s.parse().unwrap())
             .collect();
-        Self::Rgb(v_u8[0], v_u8[1], v_u8[2])
+        (v_u8[0], v_u8[1], v_u8[2], 1.)
     }
-    fn parse_rgba(str: &str) -> Self {
+    fn parse_lab_str(str: &str) -> (f64, f64, f64) {
+        let v: Vec<f64> = str
+            .trim()
+            .replace(" ", "")
+            .replace("lab(", "")
+            .replace(")", "")
+            .split(",")
+            .map(|s| f64::from_str(s).unwrap())
+            .collect();
+        (v[0], v[1], v[2])
+    }
+    fn parse_rgba_str(str: &str) -> (u8, u8, u8, f64) {
         let v: Vec<String> = str
             .trim()
             .replace(" ", "")
@@ -93,7 +88,7 @@ impl Color {
             v[2].parse().unwrap(),
         );
         let alpha = f64::from_str(v[3].as_str()).unwrap();
-        Self::Rgba(r, g, b, alpha)
+        (r, g, b, alpha)
     }
 }
 
@@ -104,12 +99,35 @@ mod tests {
     #[test]
     fn test_color_from_str() {
         let hex_color = Color::from("#abcdef");
-        assert_eq!(hex_color, Color::Hex(String::from("#abcdef")));
+        assert_eq!(
+            hex_color,
+            Color {
+                rgba: (171, 205, 239, 1.)
+            }
+        );
 
         let rgb_color = Color::from("rgb(255, 255, 255)");
-        assert_eq!(rgb_color, Color::Rgb(255, 255, 255));
+        assert_eq!(
+            rgb_color,
+            Color {
+                rgba: (255, 255, 255, 1.)
+            }
+        );
 
         let rgba_color = Color::from("rgba(255, 255, 255, 0.6)");
-        assert_eq!(rgba_color, Color::Rgba(255, 255, 255, 0.6));
+        assert_eq!(
+            rgba_color,
+            Color {
+                rgba: (255, 255, 255, 0.6)
+            }
+        );
+
+        let lab_color = Color::from("lab(100, 0, 0)");
+        assert_eq!(
+            lab_color,
+            Color {
+                rgba: (255, 255, 255, 1.)
+            }
+        );
     }
 }

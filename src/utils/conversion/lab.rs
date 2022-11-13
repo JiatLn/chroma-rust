@@ -1,5 +1,3 @@
-use crate::Color;
-
 // Corresponds roughly to RGB brighter/darker
 // static KN: f64 = 18.;
 // D65 standard referent
@@ -13,35 +11,33 @@ static LAB_CONSTANTS_T3: f64 = LAB_CONSTANTS_T1 * LAB_CONSTANTS_T1 * LAB_CONSTAN
 
 /// Convert RGB to CIE-L*ab
 /// https://en.wikipedia.org/wiki/Lab_color_space#CIELAB-CIEXYZ_conversions
-pub fn rgb2lab(color: Color) -> Color {
-    if let Color::Rgb(r, g, b) = color {
-        let (x, y, z) = rgb2xyz(r as f64, g as f64, b as f64);
+pub fn rgb2lab(color: (u8, u8, u8, f64)) -> (f64, f64, f64) {
+    let (r, g, b, _alpha) = color;
 
-        let mut l = 116. * y - 16.;
-        l = if l < 0. { 0. } else { l };
+    let (x, y, z) = rgb2xyz(r as f64, g as f64, b as f64);
 
-        return Color::Lab(l, 500.0 * (x - y), 200.0 * (y - z));
-    }
-    Color::Unknown
+    let mut l = 116. * y - 16.;
+    l = if l < 0. { 0. } else { l };
+
+    (l, 500.0 * (x - y), 200.0 * (y - z))
 }
 
-pub fn lab2rgb(color: Color) -> Color {
-    if let Color::Lab(l, a, b) = color {
-        let mut y = (l + 16.) / 116.;
-        let mut x = a / 500. + y;
-        let mut z = y - b / 200.;
+pub fn lab2rgb(color: (f64, f64, f64)) -> (u8, u8, u8, f64) {
+    let (l, a, b) = color;
 
-        x = XN * lab_xyz(x);
-        y = YN * lab_xyz(y);
-        z = ZN * lab_xyz(z);
+    let mut y = (l + 16.) / 116.;
+    let mut x = a / 500. + y;
+    let mut z = y - b / 200.;
 
-        let r = xyz_rgb(3.2404542 * x - 1.5371385 * y - 0.4985314 * z);
-        let g = xyz_rgb(-0.9692660 * x + 1.8760108 * y + 0.0415560 * z);
-        let b = xyz_rgb(0.0556434 * x - 0.2040259 * y + 1.0572252 * z);
+    x = XN * lab_xyz(x);
+    y = YN * lab_xyz(y);
+    z = ZN * lab_xyz(z);
 
-        return Color::Rgb(r.round() as u8, g.round() as u8, b.round() as u8);
-    }
-    Color::Unknown
+    let r = xyz_rgb(3.2404542 * x - 1.5371385 * y - 0.4985314 * z);
+    let g = xyz_rgb(-0.9692660 * x + 1.8760108 * y + 0.0415560 * z);
+    let b = xyz_rgb(0.0556434 * x - 0.2040259 * y + 1.0572252 * z);
+
+    (r.round() as u8, g.round() as u8, b.round() as u8, 1.)
 }
 
 fn xyz_rgb(r: f64) -> f64 {
@@ -94,29 +90,23 @@ mod tests {
 
     #[test]
     fn test_rgb2lab() {
-        let color = Color::Rgb(0, 255, 255);
+        let color = (0, 255, 255, 1.);
         let lab_color = rgb2lab(color);
-        match lab_color {
-            Color::Lab(l, a, b) => {
-                assert!(approx_equal(l, 91.11));
-                assert!(approx_equal(a, -48.09));
-                assert!(approx_equal(b, -14.13));
-            }
-            _ => assert!(false),
-        }
+        let (l, a, b) = lab_color;
+
+        assert!(approx_equal(l, 91.11));
+        assert!(approx_equal(a, -48.09));
+        assert!(approx_equal(b, -14.13));
     }
 
     #[test]
     fn test_lab2rgb() {
-        let color = Color::Lab(91.11, -48.09, -14.13);
+        let color = (91.11, -48.09, -14.13);
         let rgb_color = lab2rgb(color);
-        match rgb_color {
-            Color::Rgb(r, g, b) => {
-                assert_eq!(r, 0);
-                assert_eq!(g, 255);
-                assert_eq!(b, 255);
-            }
-            _ => assert!(false),
-        }
+        let (r, g, b, _alpha) = rgb_color;
+
+        assert_eq!(r, 0);
+        assert_eq!(g, 255);
+        assert_eq!(b, 255);
     }
 }

@@ -11,9 +11,9 @@ pub fn distance(c1: &str, c2: &str, mode: Option<&str>) -> f64 {
     let c2 = Color::from(c2).get_mode(mode);
 
     let mut sum_sq = 0.0;
-    for (c1, c2) in c1.into_iter().zip(c2.into_iter()) {
-        sum_sq += (c1 - c2).powi(2);
-    }
+    c1.iter().zip(c2.iter()).for_each(|(a, b)| {
+        sum_sq += (a - b).powi(2);
+    });
     sum_sq.sqrt()
 }
 
