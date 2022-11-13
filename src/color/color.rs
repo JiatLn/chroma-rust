@@ -1,11 +1,12 @@
 use crate::utils::conversion;
 use std::str::FromStr;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Color {
     pub rgba: (u8, u8, u8, f64),
 }
 
+/// Color is a struct that represents a color in RGBA format.
 impl From<&str> for Color {
     fn from(str: &str) -> Self {
         let (r, g, b, a) = match str {
@@ -16,7 +17,16 @@ impl From<&str> for Color {
                 let (l, a, b) = Color::parse_lab_str(str);
                 conversion::lab::lab2rgb((l, a, b))
             }
-            _ => todo!(),
+            _ => {
+                let found = crate::W3CX11.get(str);
+                match found {
+                    Some(hex) => {
+                        let (r, g, b, _) = conversion::hex::hex2rgb(hex);
+                        (r, g, b, 1.0)
+                    }
+                    None => todo!(),
+                }
+            }
         };
         Color { rgba: (r, g, b, a) }
     }
@@ -32,7 +42,10 @@ impl Iterator for Color {
 }
 
 impl Color {
-    pub fn get_mode(self, mode: &str) -> Vec<f64> {
+    /// get color with mode
+    ///
+    /// mode can be `rgb`, `rgba`, `hex`, `lab`
+    pub fn get_mode(&self, mode: &str) -> Vec<f64> {
         match mode {
             "rgb" => vec![self.rgba.0 as f64, self.rgba.1 as f64, self.rgba.2 as f64],
             "rgba" => vec![
@@ -46,6 +59,22 @@ impl Color {
                 vec![l, a, b]
             }
             _ => todo!(),
+        }
+    }
+    /// get color name
+    ///
+    /// it will return a name of color if found in [*w3cx11*](http://www.w3.org/TR/css3-color/#svg-color), otherwise return hex code
+    pub fn name(self) -> String {
+        let hex = conversion::hex::rgb2hex(self.rgba);
+
+        let result = crate::W3CX11
+            .clone()
+            .into_iter()
+            .find(|(_k, v)| v.to_string() == hex);
+
+        match result {
+            Some((k, _v)) => String::from(k),
+            None => hex,
         }
     }
 }
@@ -129,5 +158,25 @@ mod tests {
                 rgba: (255, 255, 255, 1.)
             }
         );
+
+        let name_color = Color::from("mediumspringgreen");
+        assert_eq!(
+            name_color,
+            Color {
+                rgba: (0, 250, 154, 1.)
+            }
+        );
+    }
+
+    #[test]
+    fn test_get_color_name() {
+        let color = Color::from("#abcdef");
+        assert_eq!(color.name(), "#abcdef");
+
+        let color = Color::from("rgb(0, 250, 154)");
+        assert_eq!(color.name(), "mediumspringgreen");
+
+        let color = Color::from("#00fa9a");
+        assert_eq!(color.name(), "mediumspringgreen");
     }
 }
