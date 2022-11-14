@@ -4,6 +4,18 @@ pub fn rgb2hex(color: (u8, u8, u8, f64)) -> String {
 }
 
 pub fn hex2rgb(hex: &str) -> (u8, u8, u8, f64) {
+    let mut hex = String::from(hex);
+    if hex.len() == 4 {
+        hex = format!(
+            "#{}{}{}{}{}{}",
+            hex.chars().nth(1).unwrap(),
+            hex.chars().nth(1).unwrap(),
+            hex.chars().nth(2).unwrap(),
+            hex.chars().nth(2).unwrap(),
+            hex.chars().nth(3).unwrap(),
+            hex.chars().nth(3).unwrap()
+        );
+    }
     let r = u8::from_str_radix(&hex[1..3], 16).unwrap();
     let g = u8::from_str_radix(&hex[3..5], 16).unwrap();
     let b = u8::from_str_radix(&hex[5..7], 16).unwrap();
@@ -23,6 +35,9 @@ mod tests {
     #[test]
     fn test_hex2rgb() {
         let hex = "#ffffff";
+        assert_eq!(hex2rgb(hex), (255, 255, 255, 1.));
+
+        let hex = "#fff";
         assert_eq!(hex2rgb(hex), (255, 255, 255, 1.));
     }
 }
