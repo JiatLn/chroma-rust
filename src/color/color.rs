@@ -64,7 +64,7 @@ impl Color {
     /// get color name
     ///
     /// it will return a name of color if found in [*w3cx11*](http://www.w3.org/TR/css3-color/#svg-color), otherwise return hex code
-    pub fn name(self) -> String {
+    pub fn name(&self) -> String {
         let hex = conversion::hex::rgb2hex(self.rgba);
 
         let result = crate::W3CX11
@@ -92,6 +92,12 @@ impl Color {
             self.rgba.3 = alpha;
         }
         self
+    }
+
+    pub fn new(r: u8, g: u8, b: u8, alpha: f64) -> Color {
+        Color {
+            rgba: (r, g, b, alpha),
+        }
     }
 }
 
