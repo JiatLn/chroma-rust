@@ -77,6 +77,22 @@ impl Color {
             None => hex,
         }
     }
+
+    /// get color alpha
+    pub fn get_alpha(&self) -> f64 {
+        self.rgba.3
+    }
+    /// set color alpha
+    pub fn set_alpha(&mut self, alpha: f64) -> &mut Self {
+        if alpha > 1.0 {
+            self.rgba.3 = 1.0;
+        } else if alpha < 0.0 {
+            self.rgba.3 = 0.0;
+        } else {
+            self.rgba.3 = alpha;
+        }
+        self
+    }
 }
 
 impl Color {
@@ -178,5 +194,17 @@ mod tests {
 
         let color = Color::from("#00fa9a");
         assert_eq!(color.name(), "mediumspringgreen");
+    }
+
+    #[test]
+    fn test_get_and_set_alpha() {
+        let mut color = Color::from("#abcdef");
+        color.set_alpha(1.5);
+        assert_eq!(color.get_alpha(), 1.0);
+        color.set_alpha(-0.5);
+        assert_eq!(color.get_alpha(), 0.0);
+        color.set_alpha(0.5);
+        assert_eq!(color.get_alpha(), 0.5);
+        assert_eq!(color.rgba, (171, 205, 239, 0.5));
     }
 }
