@@ -26,11 +26,11 @@ pub fn lab2rgb(color: (f64, f64, f64)) -> (u8, u8, u8, f64) {
     let (l, a, b) = color;
 
     let mut y = (l + 16.) / 116.;
-    let mut x = a / 500. + y;
+    let mut x = y + a / 500.;
     let mut z = y - b / 200.;
 
-    x = XN * lab_xyz(x);
     y = YN * lab_xyz(y);
+    x = XN * lab_xyz(x);
     z = ZN * lab_xyz(z);
 
     let r = xyz_rgb(3.2404542 * x - 1.5371385 * y - 0.4985314 * z);

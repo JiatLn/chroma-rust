@@ -4,6 +4,7 @@ extern crate lazy_static;
 mod color;
 mod data;
 mod generator;
+mod ops;
 mod utils;
 
 pub use color::color::Color;
