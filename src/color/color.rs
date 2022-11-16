@@ -17,6 +17,11 @@ impl From<&str> for Color {
                 let (l, a, b) = Color::parse_lab_str(str);
                 conversion::lab::lab2rgb((l, a, b))
             }
+            str if str.starts_with("hsl") => {
+                let (h, s, l) = Color::parse_hsl_str(str);
+                let (r, g, b) = conversion::hsl::hsl2rgb((h, s, l));
+                (r, g, b, 1.0)
+            }
             _ => {
                 let found = crate::W3CX11.get(str);
                 match found {
@@ -44,7 +49,7 @@ impl Iterator for Color {
 impl Color {
     /// get color with mode
     ///
-    /// mode can be `rgb`, `rgba`, `hex`, `lab`
+    /// mode can be `rgb`, `rgba`, `hex`, `lab`, `hsl`
     pub fn get_mode(&self, mode: &str) -> Vec<f64> {
         match mode {
             "rgb" => vec![self.rgba.0 as f64, self.rgba.1 as f64, self.rgba.2 as f64],
@@ -57,6 +62,11 @@ impl Color {
             "lab" => {
                 let (l, a, b) = conversion::lab::rgb2lab(self.rgba);
                 vec![l, a, b]
+            }
+            "hsl" => {
+                let (r, g, b, a) = self.rgba;
+                let (h, s, l) = conversion::hsl::rgb2hsl((r, g, b));
+                vec![h, s, l, a]
             }
             _ => todo!(),
         }
@@ -124,6 +134,23 @@ impl Color {
             .collect();
         (v[0], v[1], v[2])
     }
+    fn parse_hsl_str(str: &str) -> (f64, f64, f64) {
+        let v: Vec<f64> = str
+            .trim()
+            .replace(" ", "")
+            .replace("hsl(", "")
+            .replace(")", "")
+            .split(",")
+            .map(|s| {
+                if s.contains('%') {
+                    f64::from_str(s.replace("%", "").as_str()).unwrap() / 100.
+                } else {
+                    f64::from_str(s).unwrap()
+                }
+            })
+            .collect();
+        (v[0], v[1], v[2])
+    }
     fn parse_rgba_str(str: &str) -> (u8, u8, u8, f64) {
         let v: Vec<String> = str
             .trim()
@@ -148,7 +175,10 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_color_from_str() {
+    fn test_color_from_hex_str() {
+        let hex_color = Color::from("#ff0000");
+        assert_eq!(hex_color.rgba, (255, 0, 0, 1.0));
+
         let hex_color = Color::from("#abcdef");
         assert_eq!(
             hex_color,
@@ -156,7 +186,10 @@ mod tests {
                 rgba: (171, 205, 239, 1.)
             }
         );
+    }
 
+    #[test]
+    fn test_color_from_rgb_str() {
         let rgb_color = Color::from("rgb(255, 255, 255)");
         assert_eq!(
             rgb_color,
@@ -172,7 +205,10 @@ mod tests {
                 rgba: (255, 255, 255, 0.6)
             }
         );
+    }
 
+    #[test]
+    fn test_color_from_lab_str() {
         let lab_color = Color::from("lab(100, 0, 0)");
         assert_eq!(
             lab_color,
@@ -180,12 +216,42 @@ mod tests {
                 rgba: (255, 255, 255, 1.)
             }
         );
+    }
 
+    #[test]
+    fn test_color_from_name_str() {
         let name_color = Color::from("mediumspringgreen");
         assert_eq!(
             name_color,
             Color {
                 rgba: (0, 250, 154, 1.)
+            }
+        );
+    }
+
+    #[test]
+    fn test_color_from_hsl_str() {
+        let hsl_color = Color::from("hsl(0, 100%, 50%)");
+        assert_eq!(
+            hsl_color,
+            Color {
+                rgba: (255, 0, 0, 1.)
+            }
+        );
+
+        let hsl_color = Color::from("hsl(120, 100%, 50%)");
+        assert_eq!(
+            hsl_color,
+            Color {
+                rgba: (0, 255, 0, 1.)
+            }
+        );
+
+        let hsl_color = Color::from("hsl(240, 100%, 50%)");
+        assert_eq!(
+            hsl_color,
+            Color {
+                rgba: (0, 0, 255, 1.)
             }
         );
     }
