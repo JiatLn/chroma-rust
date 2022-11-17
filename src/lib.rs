@@ -7,7 +7,7 @@ mod generator;
 mod ops;
 mod utils;
 
-pub use color::color::Color;
+pub use color::Color;
 use data::w3cx11::W3CX11_HASHMAP as W3CX11;
 pub use generator::random::random;
 pub use utils::conversion::*;

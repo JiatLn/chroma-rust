@@ -5,7 +5,7 @@ impl Color {
     ///
     /// # Examples
     /// ```
-    /// use color::Color;
+    /// use chroma_rust::Color;
     /// let color = Color::from("#abcdef");
     /// assert_eq!(color.alpha(), 1.);
     /// ```
@@ -16,9 +16,9 @@ impl Color {
     ///
     /// # Example
     /// ```
-    /// use color::Color;
-    /// let color = Color::from("#7760BF");
-    /// let color = color.alpha(0.5);
+    /// use chroma_rust::Color;
+    /// let mut color = Color::from("#7760BF");
+    /// let color = color.set_alpha(0.5);
     /// assert_eq!(color.alpha(), 0.5);
     /// ```
     pub fn set_alpha(&mut self, alpha: f64) -> &mut Self {
