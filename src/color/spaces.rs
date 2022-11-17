@@ -4,6 +4,7 @@ impl Color {
     /// Return the color as hexadecimal string.
     ///
     /// The hex string will include the alpha channel if it's less than 1.
+    ///
     /// For example:
     /// ```
     /// use chroma_rust::Color;
@@ -39,7 +40,9 @@ impl Color {
         conversion::lab::rgb2lab(self.rgb())
     }
 
-    /// Returns the named color. Falls back to hexadecimal RGB string, if the color isn't present.
+    /// Returns the named color.
+    ///
+    /// Falls back to hexadecimal RGB string, if the color isn't present.
     ///
     /// Named color from [*w3cx11*](http://www.w3.org/TR/css3-color/#svg-color)
     ///

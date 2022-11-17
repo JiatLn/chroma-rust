@@ -1,4 +1,4 @@
-/// checking if a color can be parsed by chroma-rust
+/// Checking if a color can be parsed by chroma-rust
 ///
 /// you can use `chroma_rust::valid` to try if a color argument can be correctly parsed as color by `chroma_rust`.
 ///

@@ -1,6 +1,6 @@
 use crate::Color;
 
-/// calc simple Euclidean distance between two colors with the same mode
+/// Calc simple Euclidean distance between two colors with the same mode
 ///
 /// the default mode is `lab`
 pub fn distance(c1: &Color, c2: &Color, mode: Option<&str>) -> f64 {

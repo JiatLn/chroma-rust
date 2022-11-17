@@ -1,7 +1,7 @@
 use crate::Color;
 
 impl Color {
-    /// get color alpha
+    /// Get color alpha.
     ///
     /// # Examples
     /// ```
@@ -12,7 +12,10 @@ impl Color {
     pub fn alpha(&self) -> f64 {
         self.rgba.3
     }
-    /// set color alpha
+    /// Set color alpha.
+    ///
+    /// - If alpha is less than 0, it will be set to 0.
+    /// - If alpha is greater than 1, it will be set to 1.
     ///
     /// # Example
     /// ```
