@@ -71,6 +71,11 @@ impl Color {
             _ => todo!(),
         }
     }
+    /// get color hex string
+    pub fn hex(&self) -> String {
+        let (r, g, b, _) = self.rgba;
+        format!("#{:02x}{:02x}{:02x}", r, g, b)
+    }
     /// get color name
     ///
     /// it will return a name of color if found in [*w3cx11*](http://www.w3.org/TR/css3-color/#svg-color), otherwise return hex code
@@ -86,22 +91,6 @@ impl Color {
             Some((k, _v)) => String::from(k),
             None => hex,
         }
-    }
-
-    /// get color alpha
-    pub fn get_alpha(&self) -> f64 {
-        self.rgba.3
-    }
-    /// set color alpha
-    pub fn set_alpha(&mut self, alpha: f64) -> &mut Self {
-        if alpha > 1.0 {
-            self.rgba.3 = 1.0;
-        } else if alpha < 0.0 {
-            self.rgba.3 = 0.0;
-        } else {
-            self.rgba.3 = alpha;
-        }
-        self
     }
 
     pub fn new(r: u8, g: u8, b: u8, alpha: f64) -> Color {
@@ -266,17 +255,5 @@ mod tests {
 
         let color = Color::from("#00fa9a");
         assert_eq!(color.name(), "mediumspringgreen");
-    }
-
-    #[test]
-    fn test_get_and_set_alpha() {
-        let mut color = Color::from("#abcdef");
-        color.set_alpha(1.5);
-        assert_eq!(color.get_alpha(), 1.0);
-        color.set_alpha(-0.5);
-        assert_eq!(color.get_alpha(), 0.0);
-        color.set_alpha(0.5);
-        assert_eq!(color.get_alpha(), 0.5);
-        assert_eq!(color.rgba, (171, 205, 239, 0.5));
     }
 }

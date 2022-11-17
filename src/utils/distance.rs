@@ -40,5 +40,11 @@ mod tests {
         // default is lab
         assert_eq!(distance(&c1, &c2, None), 170.56524200601007);
         assert_eq!(distance(&c1, &c2, Some("lab")), 170.56524200601007);
+
+        let c1 = Color::from("#fff");
+        let c2 = Color::from("#ff0");
+
+        assert_eq!(distance(&c1, &c2, Some("rgb")), 255.0);
+        assert_eq!(distance(&c1, &c2, Some("lab")), 96.94758206572062);
     }
 }

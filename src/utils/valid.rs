@@ -20,6 +20,7 @@ pub fn valid(str: &str) -> bool {
         str if str.starts_with("rgba") => true,
         str if str.starts_with("rgb") => true,
         str if str.starts_with("lab") => true,
+        str if str.starts_with("hsl") => true,
         _ => match crate::W3CX11.get(str) {
             Some(_) => true,
             None => false,

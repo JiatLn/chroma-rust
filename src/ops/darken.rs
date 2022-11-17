@@ -8,7 +8,7 @@ impl Color {
     pub fn darken(&self, amount: Option<f64>) -> Color {
         let amount = amount.unwrap_or(1.);
         let lab = self.get_mode("lab");
-        let alpha = self.get_alpha();
+        let alpha = self.alpha();
         let (l, a, b) = (lab[0] - KN * amount, lab[1], lab[2]);
         let (r, g, b, _) = conversion::lab::lab2rgb((l, a, b));
         Color::new(r, g, b, alpha)

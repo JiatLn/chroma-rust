@@ -10,7 +10,8 @@ static LAB_CONSTANTS_T2: f64 = 3. * LAB_CONSTANTS_T1 * LAB_CONSTANTS_T1;
 static LAB_CONSTANTS_T3: f64 = LAB_CONSTANTS_T1 * LAB_CONSTANTS_T1 * LAB_CONSTANTS_T1;
 
 /// Convert RGB to CIE-L*ab
-/// https://en.wikipedia.org/wiki/Lab_color_space#CIELAB-CIEXYZ_conversions
+///
+/// <https://en.wikipedia.org/wiki/Lab_color_space#CIELAB-CIEXYZ_conversions>
 pub fn rgb2lab(color: (u8, u8, u8, f64)) -> (f64, f64, f64) {
     let (r, g, b, _alpha) = color;
 
