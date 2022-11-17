@@ -9,8 +9,8 @@ pub fn distance(c1: &Color, c2: &Color, mode: Option<&str>) -> f64 {
         None => "lab",
     };
 
-    let c1 = c1.get_mode(mode);
-    let c2 = c2.get_mode(mode);
+    let c1 = c1.mode(mode);
+    let c2 = c2.mode(mode);
 
     let mut sum_sq = 0.0;
     c1.iter().zip(c2.iter()).for_each(|(a, b)| {

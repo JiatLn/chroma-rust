@@ -41,55 +41,34 @@ impl Iterator for Color {
     type Item = f64;
 
     fn next(&mut self) -> Option<Self::Item> {
-        let (r, g, b, a) = self.rgba;
+        let (r, g, b, a) = self.rgba();
         vec![r as f64, g as f64, b as f64, a].into_iter().next()
     }
 }
 
 impl Color {
-    /// get color with mode
+    /// Get color with mode
     ///
-    /// mode can be `rgb`, `rgba`, `hex`, `lab`, `hsl`
-    pub fn get_mode(&self, mode: &str) -> Vec<f64> {
+    /// mode can be `rgb`, `rgba`, `lab`, `hsl`
+    pub fn mode(&self, mode: &str) -> Vec<f64> {
         match mode {
-            "rgb" => vec![self.rgba.0 as f64, self.rgba.1 as f64, self.rgba.2 as f64],
-            "rgba" => vec![
-                self.rgba.0 as f64,
-                self.rgba.1 as f64,
-                self.rgba.2 as f64,
-                self.rgba.3,
-            ],
+            "rgb" => {
+                let (r, g, b) = self.rgb();
+                vec![r as f64, g as f64, b as f64]
+            }
+            "rgba" => {
+                let (r, g, b, a) = self.rgba();
+                vec![r as f64, g as f64, b as f64, a]
+            }
             "lab" => {
-                let (l, a, b) = conversion::lab::rgb2lab(self.rgba);
+                let (l, a, b) = self.lab();
                 vec![l, a, b]
             }
             "hsl" => {
-                let (r, g, b, a) = self.rgba;
-                let (h, s, l) = conversion::hsl::rgb2hsl((r, g, b));
-                vec![h, s, l, a]
+                let (h, s, l) = self.hsl();
+                vec![h, s, l]
             }
             _ => todo!(),
-        }
-    }
-    /// get color hex string
-    pub fn hex(&self) -> String {
-        let (r, g, b, _) = self.rgba;
-        format!("#{:02x}{:02x}{:02x}", r, g, b)
-    }
-    /// get color name
-    ///
-    /// it will return a name of color if found in [*w3cx11*](http://www.w3.org/TR/css3-color/#svg-color), otherwise return hex code
-    pub fn name(&self) -> String {
-        let hex = conversion::hex::rgb2hex(self.rgba);
-
-        let result = crate::W3CX11
-            .clone()
-            .into_iter()
-            .find(|(_k, v)| v.to_string() == hex);
-
-        match result {
-            Some((k, _v)) => String::from(k),
-            None => hex,
         }
     }
 
@@ -243,17 +222,5 @@ mod tests {
                 rgba: (0, 0, 255, 1.)
             }
         );
-    }
-
-    #[test]
-    fn test_get_color_name() {
-        let color = Color::from("#abcdef");
-        assert_eq!(color.name(), "#abcdef");
-
-        let color = Color::from("rgb(0, 250, 154)");
-        assert_eq!(color.name(), "mediumspringgreen");
-
-        let color = Color::from("#00fa9a");
-        assert_eq!(color.name(), "mediumspringgreen");
     }
 }
