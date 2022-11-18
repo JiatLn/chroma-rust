@@ -40,6 +40,18 @@ impl Color {
         conversion::lab::rgb2lab(self.rgb())
     }
 
+    /// Returns the numeric representation of the hexadecimal RGB color.
+    ///
+    /// For example:
+    /// ```
+    /// use chroma_rust::Color;
+    /// let color = Color::from("#abcdef");
+    /// assert_eq!(color.num(), 11259375);
+    /// ```
+    pub fn num(&self) -> u32 {
+        conversion::num::rgb2num(self.rgb())
+    }
+
     /// Returns the named color.
     ///
     /// Falls back to hexadecimal RGB string, if the color isn't present.
@@ -135,5 +147,11 @@ mod tests {
 
         let color = Color::from("#00fa9a");
         assert_eq!(color.name(), "mediumspringgreen");
+    }
+
+    #[test]
+    fn test_num() {
+        let color = Color::from("#abcdef");
+        assert_eq!(color.num(), 11259375);
     }
 }

@@ -37,6 +37,15 @@ impl From<&str> for Color {
     }
 }
 
+impl From<u32> for Color {
+    fn from(num: u32) -> Self {
+        let (r, g, b) = conversion::num::num2rgb(num);
+        Color {
+            rgba: (r, g, b, 1.0),
+        }
+    }
+}
+
 impl Iterator for Color {
     type Item = f64;
 
@@ -222,5 +231,35 @@ mod tests {
                 rgba: (0, 0, 255, 1.)
             }
         );
+    }
+
+    #[test]
+    fn test_color_from_num() {
+        let num_color = Color::from(0xff0000);
+        assert_eq!(
+            num_color,
+            Color {
+                rgba: (255, 0, 0, 1.)
+            }
+        );
+
+        let num_color = Color::from(0xffff00);
+        assert_eq!(
+            num_color,
+            Color {
+                rgba: (255, 255, 0, 1.)
+            }
+        );
+
+        let num_color = Color::from(0x00ff00);
+        assert_eq!(
+            num_color,
+            Color {
+                rgba: (0, 255, 0, 1.)
+            }
+        );
+
+        let num_color = Color::from(11259375);
+        assert_eq!(num_color.hex(), "#abcdef");
     }
 }
