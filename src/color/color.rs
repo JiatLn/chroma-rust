@@ -1,5 +1,4 @@
-use crate::utils::conversion;
-use std::str::FromStr;
+use crate::utils::{conversion, parser};
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct Color {
@@ -11,25 +10,22 @@ impl From<&str> for Color {
     fn from(str: &str) -> Self {
         let (r, g, b, a) = match str {
             str if str.starts_with("#") => conversion::hex::hex2rgb(str),
-            str if str.starts_with("rgba") => Color::parse_rgba_str(str),
-            str if str.starts_with("rgb") => Color::parse_rgb_str(str),
+            str if str.starts_with("rgba") => parser::parse_rgba_str(str),
+            str if str.starts_with("rgb") => parser::parse_rgb_str(str),
             str if str.starts_with("lab") => {
-                let (l, a, b) = Color::parse_lab_str(str);
+                let (l, a, b) = parser::parse_lab_str(str);
                 conversion::lab::lab2rgb((l, a, b))
             }
             str if str.starts_with("hsl") => {
-                let (h, s, l) = Color::parse_hsl_str(str);
+                let (h, s, l) = parser::parse_hsl_str(str);
                 let (r, g, b) = conversion::hsl::hsl2rgb((h, s, l));
                 (r, g, b, 1.0)
             }
             _ => {
                 let found = crate::W3CX11.get(str);
                 match found {
-                    Some(hex) => {
-                        let (r, g, b, _) = conversion::hex::hex2rgb(hex);
-                        (r, g, b, 1.0)
-                    }
-                    None => todo!(),
+                    Some(hex) => conversion::hex::hex2rgb(hex),
+                    None => panic!("Color not found"),
                 }
             }
         };
@@ -85,65 +81,6 @@ impl Color {
         Color {
             rgba: (r, g, b, alpha),
         }
-    }
-}
-
-impl Color {
-    fn parse_rgb_str(str: &str) -> (u8, u8, u8, f64) {
-        let v_u8: Vec<u8> = str
-            .trim()
-            .replace(" ", "")
-            .replace("rgb(", "")
-            .replace(")", "")
-            .split(",")
-            .map(|s| s.parse().unwrap())
-            .collect();
-        (v_u8[0], v_u8[1], v_u8[2], 1.)
-    }
-    fn parse_lab_str(str: &str) -> (f64, f64, f64) {
-        let v: Vec<f64> = str
-            .trim()
-            .replace(" ", "")
-            .replace("lab(", "")
-            .replace(")", "")
-            .split(",")
-            .map(|s| f64::from_str(s).unwrap())
-            .collect();
-        (v[0], v[1], v[2])
-    }
-    fn parse_hsl_str(str: &str) -> (f64, f64, f64) {
-        let v: Vec<f64> = str
-            .trim()
-            .replace(" ", "")
-            .replace("hsl(", "")
-            .replace(")", "")
-            .split(",")
-            .map(|s| {
-                if s.contains('%') {
-                    f64::from_str(s.replace("%", "").as_str()).unwrap() / 100.
-                } else {
-                    f64::from_str(s).unwrap()
-                }
-            })
-            .collect();
-        (v[0], v[1], v[2])
-    }
-    fn parse_rgba_str(str: &str) -> (u8, u8, u8, f64) {
-        let v: Vec<String> = str
-            .trim()
-            .replace(" ", "")
-            .replace("rgba(", "")
-            .replace(")", "")
-            .split(",")
-            .map(|s| s.to_string())
-            .collect();
-        let (r, g, b) = (
-            v[0].parse().unwrap(),
-            v[1].parse().unwrap(),
-            v[2].parse().unwrap(),
-        );
-        let alpha = f64::from_str(v[3].as_str()).unwrap();
-        (r, g, b, alpha)
     }
 }
 
