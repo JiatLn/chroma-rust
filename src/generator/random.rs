@@ -9,7 +9,6 @@ pub fn random() -> Color {
         let index = rand::random::<usize>() % DIGITS.len();
         code.push(DIGITS.chars().nth(index).unwrap());
     }
-    dbg!(&code);
     Color::from(code.as_str())
 }
 

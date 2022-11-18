@@ -153,5 +153,8 @@ mod tests {
     fn test_num() {
         let color = Color::from("#abcdef");
         assert_eq!(color.num(), 11259375);
+
+        let color = Color::from("rgb(255, 128, 44)");
+        assert_eq!(color.num(), 16744492);
     }
 }

@@ -28,6 +28,7 @@ Generic color struct. Can be constructed from any color space. Current supported
 - Lab
 - Hex
 - Named
+- Num
 
 You can generate a color from any of these color spaces with `&str` by using the `from` method.
 
@@ -40,6 +41,7 @@ let color = Color::from("#ff0000");
 let color = Color::from("rgb(255, 0, 0)");
 let color = Color::from("rgba(255, 0, 0, 1)");
 let color = Color::from("hsl(0, 100%, 50%)");
+let color = Color::from(0xff0000);
 ```
 
 ### alpha
@@ -71,6 +73,15 @@ let name = color.name(); // "yellow"
 
 let color = Color::from("rgb(255, 128, 44)");
 let name = color.name(); // "#ff802c"
+```
+
+### num
+
+Get the number of colors in the color space.
+
+```rust
+let color = Color::from("rgb(255, 128, 44)");
+let num = color.num(); // 16744492
 ```
 
 --- 

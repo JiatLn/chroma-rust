@@ -5,6 +5,14 @@ static KN: f64 = 18.;
 
 impl Color {
     /// Darken a color by a given amount.
+    ///
+    /// Default amount is 1.0.
+    ///
+    /// Example:
+    /// ```
+    /// use chroma_rust::Color;
+    /// Color::from("hotpink").darken(Some(2.)); // #930058
+    /// ```
     pub fn darken(&self, amount: Option<f64>) -> Color {
         let amount = amount.unwrap_or(1.);
         let lab = self.mode("lab");
@@ -37,9 +45,13 @@ mod tests {
 
     #[test]
     fn test_darken_color() {
-        let color = Color::from("#7760BF");
+        let color = Color::from("hotpink");
         let darkened = color.darken(None);
-        assert_eq!(darkened.name(), "#46358e"); // #483584
+        assert_eq!(darkened.name(), "#c93384");
+
+        let color = Color::from("hotpink");
+        let darkened = color.darken(Some(2.));
+        assert_eq!(darkened.name(), "#930058");
     }
 
     #[test]
