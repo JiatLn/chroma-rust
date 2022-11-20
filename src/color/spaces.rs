@@ -80,6 +80,12 @@ impl Color {
             None => hex,
         }
     }
+
+    /// Estimate the temperature in Kelvin of any given color, though this makes the only sense for colors from the temperature gradient above.
+    /// More see [color-temperature](https://github.com/neilbartlett/color-temperature).
+    pub fn temperature(&self) -> f64 {
+        conversion::temperature::rgb2temperature(self.rgb())
+    }
 }
 
 #[cfg(test)]
@@ -156,5 +162,29 @@ mod tests {
 
         let color = Color::from("rgb(255, 128, 44)");
         assert_eq!(color.num(), 16744492);
+    }
+
+    #[test]
+    fn test_temperature() {
+        let color = Color::from("#abcdef");
+        assert_eq!(color.temperature(), 14098.);
+
+        let color = Color::from("rgb(255, 128, 44)");
+        assert_eq!(color.temperature(), 2208.);
+
+        let color = Color::from("#b3ccff");
+        assert_eq!(color.temperature(), 15005.);
+
+        let color = Color::from("#ff0000");
+        assert_eq!(color.temperature(), 1000.);
+
+        let color = Color::from("#00ff00");
+        assert_eq!(color.temperature(), 40000.);
+
+        let color = Color::from("#0000ff");
+        assert_eq!(color.temperature(), 40000.);
+
+        let color = Color::from("#000000");
+        assert_eq!(color.temperature(), 40000.);
     }
 }
