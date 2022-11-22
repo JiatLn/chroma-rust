@@ -8,7 +8,7 @@ pub fn parse_rgb_str(str: &str) -> (u8, u8, u8, f64) {
         .replace("rgb(", "")
         .replace(")", "")
         .split(",")
-        .map(|s| s.parse().unwrap())
+        .map(|s| s.parse::<f64>().unwrap().round() as u8)
         .collect();
     (v_u8[0], v_u8[1], v_u8[2], 1.)
 }
@@ -24,9 +24,9 @@ pub fn parse_rgba_str(str: &str) -> (u8, u8, u8, f64) {
         .map(|s| s.to_string())
         .collect();
     let (r, g, b) = (
-        v[0].parse().unwrap(),
-        v[1].parse().unwrap(),
-        v[2].parse().unwrap(),
+        v[0].parse::<f64>().unwrap().round() as u8,
+        v[1].parse::<f64>().unwrap().round() as u8,
+        v[2].parse::<f64>().unwrap().round() as u8,
     );
     let alpha = f64::from_str(v[3].as_str()).unwrap();
     (r, g, b, alpha)
@@ -43,6 +43,9 @@ mod tests {
 
         let rgb = parse_rgb_str("rgb(255, 255, 255)");
         assert_eq!(rgb, (255, 255, 255, 1.));
+
+        let rgb = parse_rgb_str("rgb(254, 255, 255, 0.5)");
+        assert_eq!(rgb, (254, 255, 255, 1.));
     }
 
     #[test]
