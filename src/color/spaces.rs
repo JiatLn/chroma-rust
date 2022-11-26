@@ -41,8 +41,11 @@ impl Color {
     }
 
     /// CMYK (cyan, magenta, yellow, black)
+    ///
     /// <https://en.wikipedia.org/wiki/CMYK_color_model>
+    ///
     /// <https://www.rapidtables.com/convert/color/rgb-to-cmyk.html>
+    ///
     /// Each value is in the range [0, 1]
     pub fn cmyk(&self) -> (f64, f64, f64, f64) {
         conversion::cmyk::rgb2cmyk(self.rgb())

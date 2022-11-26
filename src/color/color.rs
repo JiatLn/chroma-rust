@@ -2,7 +2,7 @@ use crate::utils::{conversion, parser};
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct Color {
-    pub rgba: (u8, u8, u8, f64),
+    pub(crate) rgba: (u8, u8, u8, f64),
 }
 
 /// Color is a struct that represents a color in RGBA format.
