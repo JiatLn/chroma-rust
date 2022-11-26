@@ -1,3 +1,5 @@
+use crate::utils::round;
+
 pub fn rgb2hex(color: (u8, u8, u8, f64)) -> String {
     let (r, g, b, a) = color;
     if a == 1. {
@@ -22,7 +24,7 @@ pub fn hex2rgb(hex: &str) -> (u8, u8, u8, f64) {
     } else if len == 9 {
         // #rrggbbaa
         alpha = (u8::from_str_radix(&hex[7..], 16).unwrap()) as f64 / 255.;
-        alpha = (alpha * 100.).round() / 100.;
+        alpha = round(alpha, 2);
         hex = hex[..7].to_string();
     }
 

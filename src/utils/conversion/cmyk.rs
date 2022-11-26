@@ -1,3 +1,5 @@
+use crate::utils::round;
+
 pub fn rgb2cmyk(color: (u8, u8, u8)) -> (f64, f64, f64, f64) {
     let (r, g, b) = color;
     let r = r as f64 / 255.0;
@@ -8,12 +10,7 @@ pub fn rgb2cmyk(color: (u8, u8, u8)) -> (f64, f64, f64, f64) {
     let c = (1.0 - r - k) * f;
     let m = (1.0 - g - k) * f;
     let y = (1.0 - b - k) * f;
-    (
-        (c * 100.0).round() / 100.0,
-        (m * 100.0).round() / 100.0,
-        (y * 100.0).round() / 100.0,
-        (k * 100.0).round() / 100.0,
-    )
+    (round(c, 2), round(m, 2), round(y, 2), round(k, 2))
 }
 
 pub fn cmyk2rgb(color: (f64, f64, f64, f64)) -> (u8, u8, u8) {
