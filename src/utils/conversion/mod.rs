@@ -1,3 +1,4 @@
+pub mod cmyk;
 pub mod hex;
 pub mod hsl;
 pub mod lab;

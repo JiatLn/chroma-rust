@@ -21,6 +21,11 @@ impl From<&str> for Color {
                 let (r, g, b) = conversion::hsl::hsl2rgb((h, s, l));
                 (r, g, b, 1.0)
             }
+            str if str.starts_with("cmyk") => {
+                let (c, m, y, k) = parser::parse_cmyk_str(str);
+                let (r, g, b) = conversion::cmyk::cmyk2rgb((c, m, y, k));
+                (r, g, b, 1.0)
+            }
             _ => {
                 let found = crate::W3CX11.get(str);
                 match found {
@@ -198,5 +203,29 @@ mod tests {
 
         let num_color = Color::from(11259375);
         assert_eq!(num_color.hex(), "#abcdef");
+    }
+
+    #[test]
+    fn test_color_from_cmyk_str() {
+        let cmyk_color = Color::from("cmyk(0, 100%, 100%, 0)");
+        assert_eq!(cmyk_color.hex(), "#ff0000");
+
+        let cmyk_color = Color::from("cmyk(100%, 0, 100%, 0)");
+        assert_eq!(cmyk_color.hex(), "#00ff00");
+
+        let cmyk_color = Color::from("cmyk(100%, 100%, 0, 0)");
+        assert_eq!(cmyk_color.hex(), "#0000ff");
+
+        let cmyk_color = Color::from("cmyk(0, 0, 0, 100%)");
+        assert_eq!(cmyk_color.hex(), "#000000");
+
+        let cmyk_color = Color::from("cmyk(0, 0, 0, 0)");
+        assert_eq!(cmyk_color.hex(), "#ffffff");
+
+        let cmyk_color = Color::from("cmyk(20%, 80%, 0, 0)");
+        assert_eq!(cmyk_color.hex(), "#cc33ff");
+
+        let cmyk_color = Color::from("cmyk(35%, 0, 60%, 0)");
+        assert_eq!(cmyk_color.hex(), "#a6ff66");
     }
 }

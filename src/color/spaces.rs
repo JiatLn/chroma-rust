@@ -40,6 +40,14 @@ impl Color {
         conversion::lab::rgb2lab(self.rgb())
     }
 
+    /// CMYK (cyan, magenta, yellow, black)
+    /// <https://en.wikipedia.org/wiki/CMYK_color_model>
+    /// <https://www.rapidtables.com/convert/color/rgb-to-cmyk.html>
+    /// Each value is in the range [0, 1]
+    pub fn cmyk(&self) -> (f64, f64, f64, f64) {
+        conversion::cmyk::rgb2cmyk(self.rgb())
+    }
+
     /// Returns the numeric representation of the hexadecimal RGB color.
     ///
     /// For example:
@@ -186,5 +194,14 @@ mod tests {
 
         let color = Color::from("#000000");
         assert_eq!(color.temperature(), 40000.);
+    }
+
+    #[test]
+    fn test_cmyk() {
+        let color = Color::from("#cc33ff");
+        assert_eq!(color.cmyk(), (0.2, 0.8, 0., 0.));
+
+        let color = Color::from("rgb(255, 128, 44)");
+        assert_eq!(color.cmyk(), (0.0, 0.5, 0.83, 0.0));
     }
 }
