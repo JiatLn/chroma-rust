@@ -1,4 +1,4 @@
-/// Convert RGB to HSL
+/// [RGB to HSL color conversion](https://www.rapidtables.com/convert/color/rgb-to-hsl.html)
 pub fn rgb2hsl(color: (u8, u8, u8)) -> (f64, f64, f64) {
     let (r, g, b) = color;
 
@@ -16,70 +16,41 @@ pub fn rgb2hsl(color: (u8, u8, u8)) -> (f64, f64, f64) {
     let delta = max - min;
 
     if delta != 0.0 {
-        if l > 0.0 && l <= 0.5 {
-            s = delta / (max + min);
-        } else {
-            s = delta / (2.0 - max - min);
-        }
+        s = delta / (1.0 - (2.0 * l - 1.0).abs());
 
-        match max {
-            x if x == r => {
-                if g >= b {
-                    h = 60.0 * ((g - b) / delta);
-                } else {
-                    h = 60.0 * ((g - b) / delta) + 360.0;
-                }
-            }
-            x if x == g => h = 60.0 * ((b - r) / delta) + 120.0,
-            x if x == b => h = 60.0 * ((r - g) / delta) + 240.0,
-            _ => (),
-        }
+        h = match max {
+            x if x == r => 60.0 * (((g - b) / delta) % 6.0),
+            x if x == g => 60.0 * (((b - r) / delta) + 2.0),
+            x if x == b => 60.0 * (((r - g) / delta) + 4.0),
+            _ => 0.0,
+        };
     }
 
     (h, s, l)
 }
 
-/// Convert HSL to RGB
+/// [HSL to RGB color conversion](https://www.rapidtables.com/convert/color/hsl-to-rgb.html)
 pub fn hsl2rgb(color: (f64, f64, f64)) -> (u8, u8, u8) {
     let (h, s, l) = color;
 
-    if s == 0.0 {
-        let v = (l * 255.).round() as u8;
-        return (v, v, v);
-    }
+    let c = (1.0 - (2.0 * l - 1.0).abs()) * s;
+    let x = c * (1.0 - ((h / 60.0) % 2.0 - 1.0).abs());
+    let m = l - c / 2.0;
 
-    let t2 = if l < 0.5 {
-        l * (1.0 + s)
-    } else {
-        l + s - l * s
+    let (r, g, b) = match h {
+        h if h >= 0.0 && h < 60.0 => (c, x, 0.0),
+        h if h >= 60.0 && h < 120.0 => (x, c, 0.0),
+        h if h >= 120.0 && h < 180.0 => (0.0, c, x),
+        h if h >= 180.0 && h < 240.0 => (0.0, x, c),
+        h if h >= 240.0 && h < 300.0 => (x, 0.0, c),
+        h if h >= 300.0 && h < 360.0 => (c, 0.0, x),
+        _ => panic!(),
     };
-    let t1 = 2.0 * l - t2;
-    let h = h / 360.0;
-
-    let mut t3 = vec![h + 1.0 / 3.0, h, h - 1.0 / 3.0];
-    let mut c = vec![0.0, 0.0, 0.0];
-
-    for i in 0..3 {
-        if t3[i] < 0.0 {
-            t3[i] += 1.0;
-        } else if t3[i] > 1.0 {
-            t3[i] -= 1.0;
-        }
-        if 6.0 * t3[i] < 1.0 {
-            c[i] = t1 + (t2 - t1) * 6.0 * t3[i];
-        } else if 2.0 * t3[i] < 1.0 {
-            c[i] = t2;
-        } else if 3.0 * t3[i] < 2.0 {
-            c[i] = t1 + (t2 - t1) * (2.0 / 3.0 - t3[i]) * 6.0;
-        } else {
-            c[i] = t1;
-        }
-    }
 
     (
-        (c[0] * 255.).round() as u8,
-        (c[1] * 255.).round() as u8,
-        (c[2] * 255.).round() as u8,
+        ((r + m) * 255.0).round() as u8,
+        ((g + m) * 255.0).round() as u8,
+        ((b + m) * 255.0).round() as u8,
     )
 }
 
