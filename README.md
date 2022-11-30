@@ -7,7 +7,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-chroma_rust = "0.1"
+chroma-rust = "0.1"
 ```
 
 and this to your crate root:
