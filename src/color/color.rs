@@ -16,7 +16,8 @@ impl Color {
 
 impl From<&str> for Color {
     fn from(str: &str) -> Self {
-        let (r, g, b, a) = match str {
+        let low_str = str.to_lowercase();
+        let (r, g, b, a) = match &low_str {
             str if str.starts_with("#") => conversion::hex::hex2rgb(str),
             str if str.starts_with("rgba") => parser::parse_rgba_str(str),
             str if str.starts_with("rgb") => parser::parse_rgb_str(str),
@@ -42,7 +43,7 @@ impl From<&str> for Color {
                 }
             }
         };
-        Color { rgba: (r, g, b, a) }
+        Color::new(r, g, b, a)
     }
 }
 
