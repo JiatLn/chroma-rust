@@ -18,14 +18,16 @@ mod tests {
 
     #[test]
     fn test_random() {
-        let color = random();
+        for _ in 1..100 {
+            let color = random();
 
-        assert!(color.rgba.0.ge(&0));
-        assert!(color.rgba.0.le(&255));
-        assert!(color.rgba.1.ge(&0));
-        assert!(color.rgba.1.le(&255));
-        assert!(color.rgba.2.ge(&0));
-        assert!(color.rgba.2.le(&255));
-        assert!(color.rgba.3.eq(&1.));
+            assert!(color.rgba.0.ge(&0));
+            assert!(color.rgba.0.le(&255));
+            assert!(color.rgba.1.ge(&0));
+            assert!(color.rgba.1.le(&255));
+            assert!(color.rgba.2.ge(&0));
+            assert!(color.rgba.2.le(&255));
+            assert!(color.rgba.3.eq(&1.));
+        }
     }
 }
