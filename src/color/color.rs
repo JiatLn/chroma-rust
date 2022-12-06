@@ -1,11 +1,19 @@
 use crate::utils::{conversion, parser};
 
+/// Color is a struct that represents a color in RGBA format.
 #[derive(Debug, PartialEq, Clone)]
 pub struct Color {
     pub(crate) rgba: (u8, u8, u8, f64),
 }
 
-/// Color is a struct that represents a color in RGBA format.
+impl Color {
+    pub fn new(r: u8, g: u8, b: u8, alpha: f64) -> Color {
+        Color {
+            rgba: (r, g, b, alpha),
+        }
+    }
+}
+
 impl From<&str> for Color {
     fn from(str: &str) -> Self {
         let (r, g, b, a) = match str {
@@ -56,39 +64,6 @@ impl Iterator for Color {
     }
 }
 
-impl Color {
-    /// Get color with mode
-    ///
-    /// mode can be `rgb`, `rgba`, `lab`, `hsl`
-    pub fn mode(&self, mode: &str) -> Vec<f64> {
-        match mode {
-            "rgb" => {
-                let (r, g, b) = self.rgb();
-                vec![r as f64, g as f64, b as f64]
-            }
-            "rgba" => {
-                let (r, g, b, a) = self.rgba();
-                vec![r as f64, g as f64, b as f64, a]
-            }
-            "lab" => {
-                let (l, a, b) = self.lab();
-                vec![l, a, b]
-            }
-            "hsl" => {
-                let (h, s, l) = self.hsl();
-                vec![h, s, l]
-            }
-            _ => todo!(),
-        }
-    }
-
-    pub fn new(r: u8, g: u8, b: u8, alpha: f64) -> Color {
-        Color {
-            rgba: (r, g, b, alpha),
-        }
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -99,12 +74,7 @@ mod tests {
         assert_eq!(hex_color.rgba, (255, 0, 0, 1.0));
 
         let hex_color = Color::from("#abcdef");
-        assert_eq!(
-            hex_color,
-            Color {
-                rgba: (171, 205, 239, 1.)
-            }
-        );
+        assert_eq!(hex_color.hex(), "#abcdef");
     }
 
     #[test]
