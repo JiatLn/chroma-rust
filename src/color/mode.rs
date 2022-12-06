@@ -29,4 +29,76 @@ impl Color {
             _ => todo!(),
         }
     }
+
+    pub fn vec_mode2color(vec_f64: Vec<f64>, mode: &str) -> Color {
+        let len = vec_f64.len();
+        match mode {
+            "rgb" => {
+                if len != 3 {
+                    panic!(
+                        "The {} mode must got a vec which len is 3, but got {}",
+                        mode, len
+                    )
+                }
+                let r = vec_f64[0].round() as u8;
+                let g = vec_f64[1].round() as u8;
+                let b = vec_f64[2].round() as u8;
+                Color::new(r, g, b, 1.0)
+            }
+            "rgba" => {
+                if len != 4 {
+                    panic!(
+                        "The {} mode must got a vec which len is 4, but got {}",
+                        mode, len
+                    )
+                }
+                let r = vec_f64[0].round() as u8;
+                let g = vec_f64[1].round() as u8;
+                let b = vec_f64[2].round() as u8;
+                let a = vec_f64[3];
+                Color::new(r, g, b, a)
+            }
+            "lab" => {
+                if len != 3 {
+                    panic!(
+                        "The {} mode must got a vec which len is 3, but got {}",
+                        mode, len
+                    )
+                }
+                let l = vec_f64[0];
+                let a = vec_f64[1];
+                let b = vec_f64[2];
+                let color_str = format!("lab({}, {}, {})", l, a, b);
+                Color::from(color_str.as_str())
+            }
+            "hsl" => {
+                if len != 3 {
+                    panic!(
+                        "The {} mode must got a vec which len is 3, but got {}",
+                        mode, len
+                    )
+                }
+                let h = vec_f64[0];
+                let s = vec_f64[1];
+                let l = vec_f64[2];
+                let color_str = format!("hsl({}, {}, {})", h, s, l);
+                Color::from(color_str.as_str())
+            }
+            "cmyk" => {
+                if len != 4 {
+                    panic!(
+                        "The {} mode must got a vec which len is 4, but got {}",
+                        mode, len
+                    )
+                }
+                let c = vec_f64[0];
+                let m = vec_f64[1];
+                let y = vec_f64[2];
+                let k = vec_f64[3];
+                let color_str = format!("cmyk({}, {}, {}, {})", c, m, y, k);
+                Color::from(color_str.as_str())
+            }
+            _ => todo!(),
+        }
+    }
 }

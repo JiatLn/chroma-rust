@@ -13,12 +13,7 @@ impl Chroma {
         for i in 0..v1.len() {
             v3.push(v1[i] + (v2[i] - v1[i]) * ratio);
         }
-        let v3 = v3
-            .into_iter()
-            .map(|x| x.to_string())
-            .collect::<Vec<String>>();
-        let str = format!("{}({})", mode, v3.join(", "));
-        Color::from(str.as_str())
+        Color::vec_mode2color(v3, mode)
     }
 
     pub fn mix(color1: &Color, color2: &Color) -> Color {
@@ -57,7 +52,7 @@ mod tests {
         let color1 = Color::from("red");
         let color2 = Color::from("green");
         let color3 = Chroma::mix_mode(&color1, &color2, "hsl");
-        assert_eq!(color3.hex(), "#bfc000");
+        assert_eq!(color3.hex(), "#c0c000");
 
         let color1 = Color::from("red");
         let color2 = Color::from("green");
