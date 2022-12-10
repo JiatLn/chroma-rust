@@ -5,6 +5,7 @@ pub fn parse_hsl_str(str: &str) -> (f64, f64, f64) {
     let v: Vec<f64> = str
         .trim()
         .replace(" ", "")
+        .replace("°", "")
         .replace("hsl(", "")
         .replace(")", "")
         .split(",")
