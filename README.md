@@ -25,6 +25,7 @@ Generic color struct. Can be constructed from any color space. Current supported
 - RGB
 - RGBA
 - HSL
+- HSV
 - Lab
 - Hex
 - Named
@@ -41,6 +42,7 @@ let color = Color::from("#ff0000");
 let color = Color::from("rgb(255, 0, 0)");
 let color = Color::from("rgba(255, 0, 0, 1)");
 let color = Color::from("hsl(0, 100%, 50%)");
+let color = Color::from("hsv(0°, 100%, 100%)");
 let color = Color::from(0xff0000);
 ```
 
