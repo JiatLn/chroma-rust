@@ -30,6 +30,10 @@ impl Color {
         conversion::hsl::rgb2hsl(self.rgb())
     }
 
+    pub fn hsv(&self) -> (f64, f64, f64) {
+        conversion::hsv::rgb2hsv(self.rgb())
+    }
+
     pub fn hsla(&self) -> (f64, f64, f64, f64) {
         let (h, s, l) = self.hsl();
         let a = self.alpha();
@@ -126,12 +130,20 @@ mod tests {
 
     #[test]
     fn test_hsl() {
-        let color = Color::from("orange");
+        let color = Color::from("cyan");
         let (h, s, l) = color.hsl();
-        // [38.82,1,0.5,1]
-        assert!(h - 38.82 < 0.01);
-        assert!(s - 1.0 < 0.01);
-        assert!(l - 0.5 < 0.01);
+        assert_eq!(h, 180.0);
+        assert_eq!(s, 1.0);
+        assert_eq!(l, 0.5);
+    }
+
+    #[test]
+    fn test_hsv() {
+        let color = Color::from("cyan");
+        let (h, s, v) = color.hsv();
+        assert_eq!(h, 180.0);
+        assert_eq!(s, 1.0);
+        assert_eq!(v, 1.0);
     }
 
     #[test]

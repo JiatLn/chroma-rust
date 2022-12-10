@@ -30,6 +30,11 @@ impl From<&str> for Color {
                 let (r, g, b) = conversion::hsl::hsl2rgb((h, s, l));
                 (r, g, b, 1.0)
             }
+            str if str.starts_with("hsv") => {
+                let (h, s, v) = parser::parse_hsv_str(str);
+                let (r, g, b) = conversion::hsv::hsv2rgb((h, s, v));
+                (r, g, b, 1.0)
+            }
             str if str.starts_with("cmyk") => {
                 let (c, m, y, k) = parser::parse_cmyk_str(str);
                 let (r, g, b) = conversion::cmyk::cmyk2rgb((c, m, y, k));
@@ -140,6 +145,33 @@ mod tests {
         let hsl_color = Color::from("hsl(240, 100%, 50%)");
         assert_eq!(
             hsl_color,
+            Color {
+                rgba: (0, 0, 255, 1.)
+            }
+        );
+    }
+
+    #[test]
+    fn test_color_from_hsv_str() {
+        let hsv_color = Color::from("hsv(0°,0%,75%)");
+        assert_eq!(
+            hsv_color,
+            Color {
+                rgba: (191, 191, 191, 1.)
+            }
+        );
+
+        let hsv_color = Color::from("hsv(120, 100%, 100%)");
+        assert_eq!(
+            hsv_color,
+            Color {
+                rgba: (0, 255, 0, 1.)
+            }
+        );
+
+        let hsv_color = Color::from("hsv(240, 100%, 100%)");
+        assert_eq!(
+            hsv_color,
             Color {
                 rgba: (0, 0, 255, 1.)
             }

@@ -3,7 +3,7 @@ use crate::Color;
 impl Color {
     /// Get color with mode
     ///
-    /// mode can be `rgb`, `rgba`, `lab`, `hsl`, `cmyk`
+    /// mode can be `rgb`, `rgba`, `lab`, `hsl`, `hsv`, `cmyk`
     pub fn mode(&self, mode: &str) -> Vec<f64> {
         match mode {
             "rgb" => {
@@ -21,6 +21,10 @@ impl Color {
             "hsl" => {
                 let (h, s, l) = self.hsl();
                 vec![h, s, l]
+            }
+            "hsv" => {
+                let (h, s, v) = self.hsv();
+                vec![h, s, v]
             }
             "cmyk" => {
                 let (c, m, y, k) = self.cmyk();
@@ -82,6 +86,19 @@ impl Color {
                 let s = vec_f64[1];
                 let l = vec_f64[2];
                 let color_str = format!("hsl({}, {}, {})", h, s, l);
+                Color::from(color_str.as_str())
+            }
+            "hsv" => {
+                if len != 3 {
+                    panic!(
+                        "The {} mode must got a vec which len is 3, but got {}",
+                        mode, len
+                    )
+                }
+                let h = vec_f64[0];
+                let s = vec_f64[1];
+                let v = vec_f64[2];
+                let color_str = format!("hsv({}, {}, {})", h, s, v);
                 Color::from(color_str.as_str())
             }
             "cmyk" => {
