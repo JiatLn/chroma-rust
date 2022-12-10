@@ -17,10 +17,13 @@ pub fn valid(str: &str) -> bool {
                 false
             }
         }
+        // TODO: check if rgb/rgba/hsl/hsla/hsv/hsva are valid
         str if str.starts_with("rgba") => true,
         str if str.starts_with("rgb") => true,
         str if str.starts_with("lab") => true,
         str if str.starts_with("hsl") => true,
+        str if str.starts_with("hsv") => true,
+        str if str.starts_with("cmyk") => true,
         _ => match crate::W3CX11.get(str) {
             Some(_) => true,
             None => false,
